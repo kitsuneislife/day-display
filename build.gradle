@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+subprojects {
+    apply plugin: 'java'
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+project(':forge') {
+    repositories {
+        maven {
+            name = 'forge'
+            url = 'https://maven.minecraftforge.net'
+        }
+    }
+}

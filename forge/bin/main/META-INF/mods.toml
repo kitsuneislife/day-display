@@ -1,0 +1,13 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "MIT"
+
+[[mods]]
+modId = "daydisplay"
+version = "1.0.0"
+displayName = "Day Display"
+credits = ""
+authors = ["kitsuneislife"]
+description = '''
+A simple HUD mod that displays the in-game day.
+'''
