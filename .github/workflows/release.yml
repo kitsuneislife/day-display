@@ -3,7 +3,7 @@ name: Build & Release
 on:
   push:
     tags:
-      - 'v1.0.1'
+      - 'v*.*.*' 
   workflow_dispatch:
     inputs:
       version:
@@ -76,11 +76,11 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
         uses: softprops/action-gh-release@v2
         with:
-            name: ${{ env.MOD_VERSION }}
-            body_path: ${{ steps.changelog.outputs.path }}
-            draft: false
-            prerelease: false
-            files: ${{ steps.artifact.outputs.file }}
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ env.MOD_VERSION }}
+          tag_name: ${{ env.MOD_VERSION }} 
+          body_path: ${{ steps.changelog.outputs.path }}
+          draft: false
+          prerelease: false
+          files: ${{ steps.artifact.outputs.file }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
