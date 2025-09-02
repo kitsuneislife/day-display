@@ -1,0 +1,58 @@
+### Core build artifacts
+build/
+*/build/
+out/
+classes/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+### Gradle / tooling
+.gradle/
+.mvn/
+gradle-app.setting
+
+### IntelliJ / Eclipse / VSCode
+.idea/
+*.iml
+*.ipr
+*.iws
+.settings/
+.classpath
+.project
+/.vscode/
+
+### OS cruft
+.DS_Store
+Thumbs.db
+
+### Logs & crash reports
+**/logs/
+*.log
+*.log.gz
+crash-reports/
+**/crash-reports/
+forge_run_output.log
+
+### Local runtime (Forge run dir)
+forge/run/
+!forge/run/mods.toml
+
+### Caches & generated data
+usernamecache.json
+usercache.json
+**/config/forge-client.toml
+**/config/fml.toml
+
+### Temporary / misc
+FORMAT.md
+*.tmp
+*.bak
+*.swp
+*.swo
+
+### Saved worlds (do not version gameplay data)
+**/saves/
+
+### Ignore processed dynamic textures cache, if any future dump
+**/processed/
