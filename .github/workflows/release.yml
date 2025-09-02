@@ -3,7 +3,7 @@ name: Build & Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v1.0.1'
   workflow_dispatch:
     inputs:
       version:
@@ -84,16 +84,3 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Derive next version pattern guidance
-        run: |
-          echo '## Version Pattern Guidance' > RELEASE_PATTERN.md
-          echo '\nSemVer: major.minor.patch' >> RELEASE_PATTERN.md
-          echo '\nCriar tag: vX.Y.Z' >> RELEASE_PATTERN.md
-          echo '\nEx: git tag v1.1.0 && git push origin v1.1.0' >> RELEASE_PATTERN.md
-          echo '\nWorkflow dispatch: use input version sem prefixo v.' >> RELEASE_PATTERN.md
-
-      - name: Upload pattern doc
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-pattern
-          path: RELEASE_PATTERN.md
