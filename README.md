@@ -103,6 +103,3 @@ Altere `processingMethod`, `bleedPasses`, `padding` e recarregue (hot‑reload j
 
 ## 📄 Licença
 MIT – use, modifique e compartilhe com crédito.
-
----
-Contribuições e sugestões são bem‑vindas. Bom jogo! 🌱

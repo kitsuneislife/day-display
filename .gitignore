@@ -45,6 +45,7 @@ usercache.json
 **/config/fml.toml
 
 ### Temporary / misc
+RELEASE_PATTERN_TEMPLATE.md
 FORMAT.md
 *.tmp
 *.bak
