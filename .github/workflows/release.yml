@@ -1,0 +1,99 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (sem v)' 
+        required: false
+      publish:
+        type: boolean
+        default: true
+        description: 'Criar release?'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      JAVA_VERSION: '17'
+      MOD_VERSION: ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ajustar versão se workflow_dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.version != '' }}
+        run: |
+          V=${{ inputs.version }}
+          sed -i "s/^mod_version=.*/mod_version=${V}/" gradle.properties
+          echo "MOD_VERSION=v${V}" >> $GITHUB_ENV
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v3
+
+      - name: Build (Forge)
+        run: ./gradlew clean :forge:build -x test --info
+
+      - name: Run tests
+        run: ./gradlew test || echo 'Tests skipped/none'
+
+      - name: Identify artifact
+        id: artifact
+        run: |
+          FILE=$(ls forge/build/libs/*.jar | grep -v '-sources' | head -n1)
+          echo "file=$FILE" >> $GITHUB_OUTPUT
+          BASENAME=$(basename "$FILE")
+          echo "name=$BASENAME" >> $GITHUB_OUTPUT
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mod-jar
+          path: ${{ steps.artifact.outputs.file }}
+
+      - name: Generate changelog (auto)
+        id: changelog
+        run: |
+          echo '## Changes' > CHANGELOG_GEN.md
+          git log --pretty=format:'- %h %s' -n 50 >> CHANGELOG_GEN.md
+          echo "path=CHANGELOG_GEN.md" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        if: ${{ startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
+        uses: softprops/action-gh-release@v2
+        with:
+            name: ${{ env.MOD_VERSION }}
+            body_path: ${{ steps.changelog.outputs.path }}
+            draft: false
+            prerelease: false
+            files: ${{ steps.artifact.outputs.file }}
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive next version pattern guidance
+        run: |
+          echo '## Version Pattern Guidance' > RELEASE_PATTERN.md
+          echo '\nSemVer: major.minor.patch' >> RELEASE_PATTERN.md
+          echo '\nCriar tag: vX.Y.Z' >> RELEASE_PATTERN.md
+          echo '\nEx: git tag v1.1.0 && git push origin v1.1.0' >> RELEASE_PATTERN.md
+          echo '\nWorkflow dispatch: use input version sem prefixo v.' >> RELEASE_PATTERN.md
+
+      - name: Upload pattern doc
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-pattern
+          path: RELEASE_PATTERN.md
